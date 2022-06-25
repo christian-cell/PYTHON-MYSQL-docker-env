@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+ web:
+  build:
+   context: .
+  entrypoint:
+    - flask
+    - run
+    - --host=0.0.0.0
+  environment:
+    FLASK_DEBUG: 1
+    FLASK_APP: './app.py'
+    #FLASK_APP: ./app.py 
+    #FLASK_APP: ./hello_world.py
+  ports:
+  - 8000:5000
+  volumes:
+  - ./:/app
+
+ mysqldb:
+  image: mysql
+  ports:
+  - 3306:3306
+  environment:
+  - MYSQL_ROOT_PASSWORD=p@ssw0rd1
+  volumes:
+  - mysql:/var/lib/mysql
+  - mysql_config:/etc/mysql
+
+ phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin:5.1.1
+    restart: 'always'
+    ports:
+      - '8087:80'
+    environment:
+      - PMA_HOST=mysqldb
+      - PMA_PASSWORD:p@ssw0rd1
+    depends_on:
+      - mysqldb
+    links:
+      - mysqldb
+
+volumes:
+  mysql:
+  mysql_config:
